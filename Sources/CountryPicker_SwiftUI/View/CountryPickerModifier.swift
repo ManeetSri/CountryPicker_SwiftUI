@@ -15,7 +15,8 @@ public struct CountryPickerModifier: ViewModifier {
     public func body(content: Content) -> some View {
         content
             .sheet(isPresented: $isPresented) {
-                CountryPicker(onSelect: onSelect)
+//                CountryPicker(onSelect: onSelect)
+                CountryCodePicker(onSelect: onSelect)
             }
     }
 }
