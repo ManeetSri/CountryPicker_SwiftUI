@@ -28,7 +28,7 @@ It provides a smooth, native experience with auto-detection, search, animations,
 2. Go to **File → Add Packages**
 3. Enter the repository URL:
    ```
-   https://github.com/your-username/CountryPicker_SwiftUI
+   https://github.com/ManeetSri/CountryPicker_SwiftUI
    ```
 4. Select **Up to Next Major Version**
 5. Add `CountryPicker_SwiftUI` to your app target
