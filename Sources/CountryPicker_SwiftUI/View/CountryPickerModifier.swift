@@ -8,15 +8,38 @@
 import SwiftUI
 
 public struct CountryPickerModifier: ViewModifier {
-    
+
     @Binding var isPresented: Bool
-    var onSelect: (CountryData) -> Void
-    
+    let accentColor: Color
+    let onSelect: (CountryData) -> Void
+
     public func body(content: Content) -> some View {
         content
             .sheet(isPresented: $isPresented) {
-//                CountryPicker(onSelect: onSelect)
-                CountryCodePicker(onSelect: onSelect)
+                CountryCodePicker(
+                    accentColor: accentColor,
+                    onSelect: onSelect
+                )
+                .presentationDetents([.medium, .large])
             }
     }
 }
+
+
+public extension View {
+
+    func countryPicker(
+        isPresented: Binding<Bool>,
+        accentColor: Color = .blue,
+        onSelect: @escaping (CountryData) -> Void
+    ) -> some View {
+        modifier(
+            CountryPickerModifier(
+                isPresented: isPresented,
+                accentColor: accentColor,
+                onSelect: onSelect
+            )
+        )
+    }
+}
+
