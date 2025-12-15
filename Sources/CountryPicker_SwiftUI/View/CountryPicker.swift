@@ -207,8 +207,7 @@ private extension CountryCodePicker {
 
         do {
             let data = try Data(contentsOf: url)
-            let decoded = try JSONDecoder().decode([CountryData].self, from: data)
-            countries = decoded.countryCode
+            countries = try JSONDecoder().decode([CountryData].self, from: data)
             
             if let region = Locale.current.regionCode,
                let detected = countries.first(where: {
