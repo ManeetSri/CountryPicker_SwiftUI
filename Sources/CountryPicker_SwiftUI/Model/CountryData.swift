@@ -16,7 +16,3 @@ public struct CountryData: Codable, Identifiable, Equatable {
     public let dial_code: String
 }
 
-public struct CountryCde: Codable {
-    public let countryCode: [CountryData]
-}
-
