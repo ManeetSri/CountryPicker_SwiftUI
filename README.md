@@ -14,7 +14,7 @@ It provides a smooth, native experience with auto-detection, search, animations,
 - [Demo 📱](#demo-)
 - [Features 🥳](#features-)
 - [Installation 💾](#installation-)
-- [Usage & Integration 👩🏾‍🔬](#usage--integration-)
+- [Usage and Integration 👩🏾‍🔬](#usage-and-integration-)
 - [Customization 🎨](#customization-)
 - [Contributing 🤝](#contributing-)
 - [License 📜](#license-)
@@ -55,7 +55,7 @@ The easiest way to install `CountryPicker_SwiftUI` is via Swift Package Manager.
 
 ---
 
-## Usage & Integration 👩🏾‍🔬
+## Usage and Integration 👩🏾‍🔬
 
 ### SwiftUI
 
