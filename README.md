@@ -26,6 +26,9 @@ It provides a smooth, native experience with auto-detection, search, animations,
 
 This package provides a clean and native-feeling country picker with search and auto-detection capabilities. It supports both sheet and full-screen presentations.
 
+<video src="demo.mov" controls="controls" style="max-width: 100%;">
+</video>
+
 ## Features 🥳
 
 - 🌍 **Auto-detect Region**: Automatically selects the user's current country based on device locale.
