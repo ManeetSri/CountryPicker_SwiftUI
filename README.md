@@ -9,9 +9,24 @@ A **lightweight, customizable country code picker** built with **SwiftUI**, pack
 
 It provides a smooth, native experience with auto-detection, search, animations, haptics, and robust support for both **SwiftUI & UIKit**.
 
+## Table of Contents
+
+- [Demo 📱](#demo-)
+- [Features 🥳](#features-)
+- [Installation 💾](#installation-)
+- [Usage & Integration 👩🏾‍🔬](#usage--integration-)
+- [Customization 🎨](#customization-)
+- [Contributing 🤝](#contributing-)
+- [License 📜](#license-)
+- [Keywords](#keywords)
+
 ---
 
-## ✨ Features
+## Demo 📱
+
+This package provides a clean and native-feeling country picker with search and auto-detection capabilities. It supports both sheet and full-screen presentations.
+
+## Features 🥳
 
 - 🌍 **Auto-detect Region**: Automatically selects the user's current country based on device locale.
 - 📌 **Smart Selection**: Selected country is highlighted and easily accessible.
@@ -24,7 +39,7 @@ It provides a smooth, native experience with auto-detection, search, animations,
 
 ---
 
-## 📦 Installation
+## Installation 💾
 
 ### Swift Package Manager
 
@@ -40,19 +55,11 @@ The easiest way to install `CountryPicker_SwiftUI` is via Swift Package Manager.
 
 ---
 
-## ✅ Requirements
-
-- **iOS 16.0+**
-- **Swift 5.9+**
-- **Xcode 15.0+**
-
----
-
-## 🚀 Usage
+## Usage & Integration 👩🏾‍🔬
 
 ### SwiftUI
 
-You can present the `CountryPicker` using a sheet or full-screen cover. It uses a `Binding` to manage the selected country.
+You can present the `CountryPicker` using the `.countryPicker` modifier.
 
 ```swift
 import SwiftUI
@@ -61,7 +68,7 @@ import CountryPicker_SwiftUI
 struct ContentView: View {
     @State private var showPicker = false
     @State private var selectedCountry: CountryData?
-
+    
     var body: some View {
         VStack {
             Button {
@@ -80,15 +87,8 @@ struct ContentView: View {
             }
         }
         .padding()
-        .sheet(isPresented: $showPicker) {
-            CountryPicker(
-                accentColor: .blue,
-                selectedCountry: $selectedCountry
-            ) { country in
-                // Callback when a country is selected (optional usage)
-                print("Selected: \(country.name)")
-                showPicker = false
-            }
+        .countryPicker(isPresented: $showPicker, selectedCountry: $selectedCountry) { country in
+            print("Selected: \(country.name)")
         }
     }
 }
@@ -96,7 +96,7 @@ struct ContentView: View {
 
 ### UIKit
 
-For UIKit apps, use the `CountryPickerViewController`. It wraps the SwiftUI view in a `UIHostingController` and handles the binding internally.
+For UIKit apps, use the `CountryPickerViewController`.
 
 ```swift
 import UIKit
@@ -135,12 +135,13 @@ class ViewController: UIViewController {
 
 ---
 
-## 🎨 Customization
+## Customization 🎨
 
 The `CountryPicker` allows you to customize the **accent color** which affects the selection checkmark and UI elements.
 
 ```swift
-CountryPicker(
+.countryPicker(
+    isPresented: $showPicker,
     accentColor: .purple, // 🟣 Custom accent color
     selectedCountry: $country
 ) { _ in }
@@ -148,7 +149,7 @@ CountryPicker(
 
 ---
 
-## 🤝 Contributing
+## Contributing 🤝
 
 Contributions are welcome! If you find a bug or want to add a feature, please feel free to open an issue or submit a pull request.
 
@@ -160,6 +161,12 @@ Contributions are welcome! If you find a bug or want to add a feature, please fe
 
 ---
 
-## 📜 License
+## License 📜
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## Keywords
+
+SwiftUI, Country Picker, iOS, Swift Package, Country Code, Dial Code, ISO Code, Flag, Mobile Number, Phone Number, UIKit, Reusable Component, Library
