@@ -11,219 +11,73 @@ import SwiftUI
 import UIKit
 #endif
 
+/// A SwiftUI-based country picker that allows users to search and select
+/// a country along with its dial code.
+///
+/// `CountryPicker` supports:
+/// - Searching by country name, ISO code, or dial code
+/// - Auto-detection of the current region
+/// - Manual confirmation via a Done button
+/// - Smooth animations and haptic feedback
+///
+/// This view is designed to be embedded inside a sheet or modal presentation.
 @available(iOS 15.0, *)
-public struct CountryCodePicker: View {
-
-    @Environment(\.dismiss) private var dismiss
-
-    // MARK: - Public
+public struct CountryPicker: View {
+    
+    @Environment(\.dismiss) internal var dismiss
+    
+    /// Accent color used for selection highlights and action buttons.
     public let accentColor: Color
+    
+    /// Callback invoked when the user confirms a country selection.
+    /// The selected `CountryData` is returned.
     public let onSelect: (CountryData) -> Void
-
-    // MARK: - State
-    @State private var countries: [CountryData] = []
-    @State private var selectedCountry: CountryData?
-
-    @State private var searchText: String = ""
-    @State private var debouncedText: String = ""
-    @State private var debounceTask: Task<Void, Never>?
-
-    #if canImport(UIKit)
-    private let haptic = UIImpactFeedbackGenerator(style: .medium)
-    #endif
-
-    // MARK: - Init
+    
+    /// Internal list of all available countries loaded from JSON.
+    @State internal var countries: [CountryData] = []
+    
+    /// Binding to the currently selected country.
+    /// This allows the parent view or controller to own the selection state.
+    @Binding internal var selectedCountry: CountryData?
+    
+    @State internal var searchText: String = ""
+    @State internal var debouncedText: String = ""
+    @State internal var debounceTask: Task<Void, Never>?
+    
+#if canImport(UIKit)
+    internal let haptic = UIImpactFeedbackGenerator(style: .medium)
+#endif
+    
+    /// Creates a new `CountryPicker`.
+    ///
+    /// - Parameters:
+    ///   - accentColor: The color used to highlight the selected country and Done button.
+    ///   - selectedCountry: A binding to the currently selected country.
+    ///   - onSelect: A closure called when the user taps the Done button.
     public init(
         accentColor: Color = .blue,
+        selectedCountry: Binding<CountryData?>,
         onSelect: @escaping (CountryData) -> Void
     ) {
         self.accentColor = accentColor
+        self._selectedCountry = selectedCountry
         self.onSelect = onSelect
     }
-
+    
     // MARK: - Body
     public var body: some View {
-        VStack(spacing: 12) {
-
+        VStack(spacing: 0) {
             header
             searchField
-
-            ScrollViewReader { proxy in
-                List {
-
-                    if let selectedCountry {
-                        Section(header: Text("Selected")) {
-                            row(selectedCountry)
-                                .id(selectedCountry.code)
-                        }
-                    }
-
-                    Section {
-                        ForEach(otherCountries) { country in
-                            row(country)
-                                .id(country.code)
-                        }
-                    }
-                }
-                .listStyle(.plain)
-                .onAppear {
-                    scrollToSelected(proxy)
-                }
-            }
+            listView
         }
         .padding()
         .onAppear {
             loadData()
         }
-    }
-}
-
-
-private extension CountryCodePicker {
-
-    var header: some View {
-        HStack {
-            Spacer()
-            Button {
-                dismiss()
-            } label: {
-                Image(systemName: "xmark.circle.fill")
-                    .font(.system(size: 28))
-                    .foregroundStyle(.secondary)
-            }
-            .buttonStyle(.plain)
+        .onDisappear {
+            debounceTask?.cancel()
         }
-    }
-
-    var searchField: some View {
-        TextField("Search country or code", text: $searchText)
-            .padding(12)
-            .background(Color(uiColor: .systemGray6))
-            .cornerRadius(10)
-            .onChange(of: searchText) { newValue in
-                debounceSearch(newValue)
-            }
-    }
-}
-
-
-private extension CountryCodePicker {
-
-    func row(_ country: CountryData) -> some View {
-        Button {
-            #if canImport(UIKit)
-            haptic.impactOccurred()
-            #endif
-
-            withAnimation(.easeInOut(duration: 0.25)) {
-                selectedCountry = country
-            }
-
-            onSelect(country)
-            dismiss()
-        } label: {
-            HStack(spacing: 14) {
-
-                Text(country.flag)
-                    .font(.system(size: 26))
-
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(country.name)
-                        .font(.system(size: 16, weight: .medium))
-                    Text(country.dial_code)
-                        .font(.system(size: 14))
-                        .foregroundColor(.secondary)
-                }
-
-                Spacer()
-
-                if country == selectedCountry {
-                    Image(systemName: "checkmark.circle.fill")
-                        .foregroundStyle(accentColor)
-                        .transition(.scale.combined(with: .opacity))
-                }
-            }
-            .padding(8)
-            .background(
-                RoundedRectangle(cornerRadius: 10)
-                    .fill(
-                        country == selectedCountry
-                        ? accentColor.opacity(0.12)
-                        : Color.clear
-                    )
-            )
-        }
-        .buttonStyle(.plain)
-    }
-}
-
-
-private extension CountryCodePicker {
-
-    func debounceSearch(_ text: String) {
-        debounceTask?.cancel()
-
-        debounceTask = Task {
-            try? await Task.sleep(nanoseconds: 300_000_000)
-            await MainActor.run {
-                debouncedText = text
-            }
-        }
-    }
-
-    var filteredCountries: [CountryData] {
-        guard !debouncedText.isEmpty else { return countries }
-
-        return countries.filter {
-            $0.name.localizedCaseInsensitiveContains(debouncedText) ||
-            $0.code.localizedCaseInsensitiveContains(debouncedText) ||
-            $0.dial_code.contains(debouncedText)
-        }
-    }
-
-    var otherCountries: [CountryData] {
-        guard let selectedCountry else { return filteredCountries }
-        return filteredCountries.filter { $0 != selectedCountry }
-    }
-}
-
-
-private extension CountryCodePicker {
-
-    func loadData() {
-        #if SWIFT_PACKAGE
-        let bundle = Bundle.module
-        #else
-        let bundle = Bundle.main
-        #endif
-
-        guard let url = bundle.url(
-            forResource: "countryCode",
-            withExtension: "json"
-        ) else {
-            assertionFailure("countryCode.json not found")
-            return
-        }
-
-        do {
-            let data = try Data(contentsOf: url)
-            countries = try JSONDecoder().decode([CountryData].self, from: data)
-            
-            if let region = Locale.current.regionCode,
-               let detected = countries.first(where: {
-                   $0.code.uppercased() == region.uppercased()
-               }) {
-                selectedCountry = detected
-            }
-        } catch {
-            print("Country picker JSON decode failed:", error)
-        }
-    }
-
-    func scrollToSelected(_ proxy: ScrollViewProxy) {
-        guard let code = selectedCountry?.code else { return }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
-            proxy.scrollTo(code, anchor: .center)
-        }
+        .hideKeyboardOnTap()
     }
 }

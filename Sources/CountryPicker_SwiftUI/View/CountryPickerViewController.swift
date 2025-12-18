@@ -12,6 +12,9 @@ import SwiftUI
 
 public final class CountryPickerViewController: UIViewController {
 
+    // MARK: - State (UIKit owns it)
+    private var selectedCountry: CountryData?
+
     private let onSelect: (CountryData) -> Void
     private let accentColor: Color
 
@@ -31,14 +34,26 @@ public final class CountryPickerViewController: UIViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
 
-        let picker = CountryCodePicker(
-            accentColor: accentColor
+        // 🔗 Create Binding manually
+        let selectionBinding = Binding<CountryData?>(
+            get: { [weak self] in
+                self?.selectedCountry
+            },
+            set: { [weak self] newValue in
+                self?.selectedCountry = newValue
+            }
+        )
+
+        let picker = CountryPicker(
+            accentColor: accentColor,
+            selectedCountry: selectionBinding
         ) { [weak self] country in
-            self?.dismiss(animated: true)
             self?.onSelect(country)
+            self?.dismiss(animated: true)
         }
 
         let host = UIHostingController(rootView: picker)
+
         addChild(host)
         host.view.frame = view.bounds
         host.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
@@ -47,4 +62,5 @@ public final class CountryPickerViewController: UIViewController {
     }
 }
 #endif
+
 
