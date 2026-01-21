@@ -58,6 +58,12 @@ extension CountryPicker {
                 selectedCountry = country
                 searchText = ""
             }
+            
+            // Auto-dismiss if enabled
+            if allowAutoDismiss {
+                onSelect(country)
+                dismiss()
+            }
         } label: {
             HStack(spacing: 14) {
                 

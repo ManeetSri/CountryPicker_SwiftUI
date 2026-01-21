@@ -10,7 +10,17 @@ import SwiftUI
 public struct CountryPickerModifier: ViewModifier {
 
     @Binding var isPresented: Bool
-    @Binding var selectedCountry: CountryData?
+    
+    // Optional external binding
+    var externalSelection: Binding<CountryData?>?
+    
+    // Internal state if external binding is nil
+    @State private var internalSelection: CountryData? = nil
+    
+    // Computed binding that uses external if available, otherwise internal
+    private var selectionBinding: Binding<CountryData?> {
+        externalSelection ?? $internalSelection
+    }
     
     let isDismissable: Bool
     let accentColor: Color
@@ -21,7 +31,8 @@ public struct CountryPickerModifier: ViewModifier {
             .sheet(isPresented: $isPresented) {
                 CountryPicker(
                     accentColor: accentColor,
-                    selectedCountry: $selectedCountry,
+                    selectedCountry: selectionBinding,
+                    allowAutoDismiss: true, // Auto-dismiss is enabled by default in modifier
                     onSelect: onSelect
                 )
                 .background(.white)
@@ -36,7 +47,7 @@ public extension View {
 
     func countryPicker(
         isPresented: Binding<Bool>,
-        selectedCountry: Binding<CountryData?> = .constant(nil),
+        selectedCountry: Binding<CountryData?>? = nil,
         accentColor: Color = .blue,
         isDismissable: Bool = true,
         onSelect: @escaping (CountryData) -> Void
@@ -44,7 +55,7 @@ public extension View {
         modifier(
             CountryPickerModifier(
                 isPresented: isPresented,
-                selectedCountry: selectedCountry,
+                externalSelection: selectedCountry,
                 isDismissable: isDismissable,
                 accentColor: accentColor,
                 onSelect: onSelect

@@ -48,19 +48,25 @@ public struct CountryPicker: View {
     internal let haptic = UIImpactFeedbackGenerator(style: .medium)
 #endif
     
+    /// If true, the picker will automatically dismiss when a country is selected.
+    public let allowAutoDismiss: Bool
+    
     /// Creates a new `CountryPicker`.
     ///
     /// - Parameters:
     ///   - accentColor: The color used to highlight the selected country and Done button.
     ///   - selectedCountry: A binding to the currently selected country.
-    ///   - onSelect: A closure called when the user taps the Done button.
+    ///   - allowAutoDismiss: If true, the picker dismisses immediately after selection.
+    ///   - onSelect: A closure called when the user selects a country (or taps Done).
     public init(
         accentColor: Color = .blue,
         selectedCountry: Binding<CountryData?>,
+        allowAutoDismiss: Bool = true,
         onSelect: @escaping (CountryData) -> Void
     ) {
         self.accentColor = accentColor
         self._selectedCountry = selectedCountry
+        self.allowAutoDismiss = allowAutoDismiss
         self.onSelect = onSelect
     }
     
