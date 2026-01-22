@@ -1,3 +1,26 @@
+# v1.1.0 - Auto-Dismiss Control 🛠️
+
+This release introduces finer control over the dismissal behavior of the `CountryPicker`.
+
+## ✨ New Features
+
+- **Auto-Dismiss Configuration**: The `CountryPicker` view now accepts an `allowAutoDismiss` parameter (defaulting to `true`).
+  - Set this to `false` if you want to keep the picker open after selection (e.g., for batch operations or manual confirmation).
+- **Modifier Updates**: The `.countryPicker` modifier now enables auto-dismiss by default, ensuring a smooth user experience.
+
+## 👩🏾‍🔬 Usage Example
+
+```swift
+CountryPicker(
+    selectedCountry: $country,
+    allowAutoDismiss: false // Picker stays open after selection
+) { selected in
+    print("Selected: \(selected.name)")
+}
+```
+
+--
+
 # v1.0.0 - Initial Release 🚀
 
 We are excited to announce the first major release of `CountryPicker_SwiftUI`! This library provides a polished, native-feeling country code picker for iOS applications, supporting both SwiftUI and UIKit.
